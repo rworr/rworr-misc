@@ -1,9 +1,30 @@
-import urllib2
-import sys
 import os
+import sys
+import urllib2
+import traceback
 from argparse import ArgumentParser
 
+python_file_format =  """
+import sys
+import traceback
+
+def main():
+    print "TODO"
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        pass
+    except (ValueError, IOError) as error:
+        print '%s: %s' % (type(error).__name__, error)
+    except Exception as error:
+        print 'Uncaught Error: %s:\\n%s' % (type(error).__name__, traceback.format_exc())
+
+"""
+
 def parse_args(args):
+    # Checks if the directory is valid
     def valid_dir(path):
         if not os.path.exists(path):
             raise Exception('Unable to setup: directory %s does not exist' % path)
@@ -11,10 +32,19 @@ def parse_args(args):
             raise Exception('Unable to setup: %s is not a directory' % path)
         return path
     
+    # Checks if the given list of languages is supported
+    def language_list(list):
+        supported_languages = ['python', 'c++']
+        langs = [l.strip() for l in list.split(',')]
+        for lang in langs:
+            if lang not in supported_languages:
+                raise Exception('Unable to setup: %s is not a supported language')
+        return langs
+
     argp = ArgumentParser(description='Project Euler local setup')
     argp.add_argument(
         '--start-problem', metavar='S',
-        type=int, required=True,
+        type=int, default=1,
         help='First problem to pull')
     argp.add_argument(
         '--num-problems', metavar='N',
@@ -22,7 +52,7 @@ def parse_args(args):
         help='Number of problems to pull')
     argp.add_argument(
         '--languages', metavar='L1,L2,...',
-        default='python',
+        default='python', type=language_list,
         help='comma-separated list of languages to setup')
     argp.add_argument(
         '--root-directory', metavar='PATH',
@@ -31,14 +61,16 @@ def parse_args(args):
     args = argp.parse_args()
     return args
 
-def dir_exists(path, warn=False, message=''):
+# Returns false if the directory did not exist previously
+def dir_exists(path):
     if not os.path.exists(path):
         os.mkdir(path)
+        return False
     elif not os.path.isdir(path):
         raise Exception('Unable to setup: %s already exists and is not a directory' % lang_dir)
-    elif warn:
-        print message % path
+    return True
 
+# Removes any html tags
 def strip_html_tags(html):
     while '<' in html:
         tag_start_idx = html.index('<')
@@ -49,6 +81,7 @@ def strip_html_tags(html):
             html = html[:tag_start_idx] + html[tag_end_idx:]
     return html
 
+# Removes any html comments
 def strip_html_comments(html):
     while '<!--' in html:
         comment_start_idx = html.index('<!--')
@@ -56,6 +89,7 @@ def strip_html_comments(html):
         html = html[:comment_start_idx] + html[comment_end_idx:]
     return html
 
+# Returns a list of links to data files
 def parse_data_files(html):
     links = []
     while 'a href=' in html:
@@ -79,8 +113,7 @@ def main(args):
     args = parse_args(args)
 
     # check for language directories
-    languages = [l.strip() for l in args.languages.split(',')]
-    for lang in languages:
+    for lang in args.languages:
         dir_exists(os.path.join(args.root_directory, lang))
         
     # check for doc directories
@@ -108,9 +141,18 @@ def main(args):
         description = '\n'.join(filter(None, [line.strip() for line in description.split('\n')]))
 
         # create directories
-        for lang in languages:
+        for lang in args.languages:
             path = os.path.join(args.root_directory, lang, str(problem))
-            dir_exists(path, warn=True, message='%s already exists; skipping')
+            if dir_exists(path):
+                print '%s already exists; skipping' % path
+                continue
+            # write file templates
+            if lang == 'python':
+                with open(os.path.join(path, 'problem_%s.py' % problem), 'w') as template:
+                    comments = '\n'.join(['# %s' % line for line in description.split('\n')])
+                    template.write('# Project Euler Problem %s\n%s\n' % (problem, comments))
+                    template.write(python_file_format)
+            # write data files
             for file in files:
                 filename = file.split('/')[-1].split('#')[0].split('?')[0]
                 with open(os.path.join(path, filename), 'w') as datafile:
@@ -122,5 +164,12 @@ def main(args):
             doc_file.write(description)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        pass
+    except (ValueError, IOError) as error:
+        print '%s: %s' % (type(error).__name__, error)
+    except Exception as error:
+        print 'Uncaught Error: %s:\n%s' % (type(error).__name__, traceback.format_exc())
 
