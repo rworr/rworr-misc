@@ -1,0 +1,5 @@
+A Repository for any scripts I write that don't merit having a full repo to themselves.
+
+Current contents:
+project-euler-local-setup.py - a script which scrapes projecteuler.net, and constructs directories for each problem and language, and a doc directory containing problem descriptions
+
