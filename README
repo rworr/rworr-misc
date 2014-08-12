@@ -7,6 +7,6 @@ project-euler-scripts: a collection of scripts to make my life easier when worki
     - project-euler-local-setup.py: a script which scrapes projecteuler.net, 
                        and constructs directories for each problem and language, 
                        and a doc directory containing problem descriptions
-    - project-euler-run: a script which executes the given project euler solution 
+    - project-euler-run.py: a script which executes the given project euler solution 
                        in all languages from the root directory
 
