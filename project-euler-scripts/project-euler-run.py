@@ -4,6 +4,7 @@ import sys
 import argparse
 import traceback
 import subprocess
+import resource
 
 supported_langs = ['python', 'c++']
 
@@ -33,7 +34,7 @@ def parse_args(args):
 
 def main(args):
     args = parse_args(args)
-
+    prev_time = 0.0
     # iterate over given problems and found languages
     for problem in args.problems:
         languages = [dir for dir in os.listdir(os.getcwd()) if os.path.isdir(dir) and dir in supported_langs]
@@ -43,9 +44,11 @@ def main(args):
                 # execute python files and print output
                 if os.path.exists(file) and os.path.isfile(file):
                     output = subprocess.check_output(['python', file])
+                    ru = resource.getrusage(resource.RUSAGE_CHILDREN)
                     print '\nproblem_%s.py: output:' % problem
                     print '--------------------' + ('-'*len(str(problem)))
-                    print '%s\n' % output
+                    print '%s%sms exectution time\n' % (output, float(ru.ru_utime + ru.ru_stime - prev_time)*100.0) 
+                    prev_time = ru.ru_utime + ru.ru_stime
             elif language == 'c++':
                 # compile and run c++
                 pass
