@@ -2,6 +2,7 @@
 import os
 import sys
 import urllib2
+import sqlite3
 import traceback
 from argparse import ArgumentParser
 
@@ -61,6 +62,13 @@ def parse_args(args):
         help='root directory for setup')
     args = argp.parse_args()
     return args
+
+def execute(query, error_message='Error: %s'):
+    try:
+        with db:
+            db.execute(query)
+     except Exception as error:
+        print error_message % error
 
 # Returns false if the directory did not exist previously
 def dir_exists(path):
@@ -163,6 +171,16 @@ def main(args):
         path = os.path.join(doc_dir, 'problem_%s.txt' % problem)
         with open(path, 'w') as doc_file:
             doc_file.write(description)
+
+        # create db if it doesn't exist
+        db_path = os.path.join(args.root_directory, 'solutions.db')
+        if not os.path.exists(db_path):
+            global db
+            db = sqlite3.connect(db_path)
+            # create solutions table
+            execute('CREATE TABLE solutions (id integer primary key, language text, solution text, speed text)',
+                    'Error creating table: %s')
+            db.close()
 
 if __name__ == '__main__':
     try:
