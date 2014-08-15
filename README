@@ -1,6 +1,11 @@
 A Repository for any scripts I write that don't merit having a full repo to themselves.
 
 Current contents:
+
+project-euler-results: a table containing the project euler problems I have solved,
+                       with the fastest execution time of my solution and the
+                       language I implemented the fastest solution in
+
 project-euler-scripts: a collection of scripts to make my life easier when working
                        through project euler (also because I'm not putting my solutions
                        on github, so I wanted to write some stuff I could put on github)
@@ -9,4 +14,6 @@ project-euler-scripts: a collection of scripts to make my life easier when worki
                        and a doc directory containing problem descriptions
     - project-euler.py: a script which executes the given project euler solution 
                        in all languages from the root directory
+    - project-euler-run.py: a script which writes a file containing the problems from 
+                       the database and the execution times of the solutions
 
