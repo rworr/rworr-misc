@@ -28,6 +28,19 @@ if __name__ == '__main__':
 
 """)
 
+cpp_file_format = Template("""// Project Euler Problem $problem
+$description
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cout << "TODO" << endl;
+    return 0;
+}
+""")
+
 def parse_args(args):
     # Checks if the directory is valid
     def valid_dir(path):
@@ -163,6 +176,10 @@ def main(args):
                 with open(os.path.join(path, 'problem_%s.py' % problem), 'w') as template:
                     comments = '\n'.join(['# %s' % line for line in description.split('\n')])
                     template.write(python_file_format.substitute(problem=problem, description=comments))
+            elif lang == 'c++':
+                with open(os.path.join(path, 'problem_%s.cpp' % problem), 'w') as template:
+                    comments = '\n'.join(['// %s' % line for line in description.split('\n')])
+                    template.write(cpp_file_format.substitute(problem=problem, description=comments))
             # write data files
             for file in files:
                 filename = file.split('/')[-1].split('#')[0].split('?')[0]

@@ -41,12 +41,11 @@ def execute(query, error_message='Error: %s'):
     try:
         with db:
             db.execute(query)
-     except Exception as error:
+    except Exception as error:
         print error_message % error
 
 def main(args):
     args = parse_args(args)
-    prev_time = 0.0
     # iterate over given problems and found languages
     for problem in args.problems:
         languages = [dir for dir in os.listdir(os.getcwd()) if os.path.isdir(dir) and dir in supported_langs]
@@ -55,9 +54,10 @@ def main(args):
                 file = os.path.join(os.getcwd(), language, str(problem), 'problem_%s.py' % problem)
                 # execute python files and print output
                 if os.path.exists(file) and os.path.isfile(file):
+                    s_ru = resource.getrusage(resource.RUSAGE_CHILDREN)
                     output = subprocess.check_output(['python', file]).strip()
-                    ru = resource.getrusage(resource.RUSAGE_CHILDREN)
-                    time = float(ru.ru_utime + ru.ru_stime - prev_time)*100.0
+                    e_ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+                    time = float(e_ru.ru_utime + e_ru.ru_stime - s_ru.ru_utime - s_ru.ru_stime)*100.0
                     print '\nproblem_%s.py: output:' % problem
                     print '--------------------' + ('-'*len(str(problem)))
                     print '%s\n%sms exectution time' % (output, time) 
@@ -74,18 +74,48 @@ def main(args):
                                 execute("update solutions set language = '%s', speed = '%s' where id = %s" % (language, time, problem),
                                         ('Error updating problem %s: ' % problem) + '%s')
                         else:
-                            print 'Incorrect answer %s for problem %s: correct answer is %s' % (output, row[2])
+                            print 'Incorrect answer %s for problem %s: correct answer is %s' % (output, problem, row[2])
                     else:
                         # insert into db if correct
                         confirmation = raw_input("Correct solution to problem %s? (Enter 'y' to update db):" % problem)
                         if confirmation.strip() == 'y':
                             execute("insert into solutions values (%s, '%s', '%s', '%s')" % (problem, language, output, time),
                                     ('Error inserting %s into db: ' % problem) + '%s')
-                    prev_time = ru.ru_utime + ru.ru_stime
             elif language == 'c++':
                 # compile and run c++
-                pass
-
+                file = os.path.join(os.getcwd(), language, str(problem), 'problem_%s.cpp' % problem)
+                if os.path.exists(file) and os.path.isfile(file):
+                    exe = os.path.join(os.getcwd(), language, str(problem), 'problem_%s' % problem)
+                    output = subprocess.check_output(['g++', file, '-o', exe, '-O3'])
+                    if output.strip():
+                        raise Exception('Error: %s failed to compile: %s' % (exe, output.strip()))
+                    s_ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+                    output = subprocess.check_output([exe]).strip()
+                    e_ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+                    time = float(e_ru.ru_utime + e_ru.ru_stime - s_ru.ru_utime - s_ru.ru_stime)*100.0
+                    print '\nproblem_%s.cpp: output:' % problem
+                    print '---------------------' + ('-'*len(str(problem)))
+                    print '%s\n%sms exectution time' % (output, time) 
+                    cursor.execute('select * from solutions where id = %s' % problem)
+                    row = cursor.fetchone()
+                    if row:
+                        # check answer
+                        if output == row[2]:
+                            # check time
+                            fastest = float(row[3])
+                            if time < fastest:
+                                # update db, new fastest time
+                                print 'New fastest time!'
+                                execute("update solutions set language = '%s', speed = '%s' where id = %s" % (language, time, problem),
+                                        ('Error updating problem %s: ' % problem) + '%s')
+                        else:
+                            print 'Incorrect answer %s for problem %s: correct answer is %s' % (output, problem, row[2])
+                    else:
+                        # insert into db if correct
+                        confirmation = raw_input("Correct solution to problem %s? (Enter 'y' to update db):" % problem)
+                        if confirmation.strip() == 'y':
+                            execute("insert into solutions values (%s, '%s', '%s', '%s')" % (problem, language, output, time),
+                                    ('Error inserting %s into db: ' % problem) + '%s')
     db.close()
 
 if __name__ == '__main__':
