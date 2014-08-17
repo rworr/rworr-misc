@@ -7,8 +7,7 @@ import traceback
 from string import Template
 from argparse import ArgumentParser
 
-python_file_format =  Template("""
-Project Euler Problem $problem
+python_file_format =  Template("""# Project Euler Problem $problem
 $description
 
 import sys
@@ -25,7 +24,7 @@ if __name__ == '__main__':
     except (ValueError, IOError) as error:
         print '%s: %s' % (type(error).__name__, error)
     except Exception as error:
-        print 'Uncaught Error: %\\n%s' % (type(error).__name__, traceback.format_exc())
+        print 'Uncaught Error: %s\\n%s' % (type(error).__name__, traceback.format_exc())
 
 """)
 
@@ -71,7 +70,7 @@ def execute(query, error_message='Error: %s'):
     try:
         with db:
             db.execute(query)
-     except Exception as error:
+    except Exception as error:
         print error_message % error
 
 # Returns false if the directory did not exist previously
@@ -163,7 +162,7 @@ def main(args):
             if lang == 'python':
                 with open(os.path.join(path, 'problem_%s.py' % problem), 'w') as template:
                     comments = '\n'.join(['# %s' % line for line in description.split('\n')])
-                  template.write(python_file_format.substitute(problem=problem, description=comments))
+                    template.write(python_file_format.substitute(problem=problem, description=comments))
             # write data files
             for file in files:
                 filename = file.split('/')[-1].split('#')[0].split('?')[0]
