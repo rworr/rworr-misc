@@ -4,9 +4,13 @@ import sys
 import urllib2
 import sqlite3
 import traceback
+from string import Template
 from argparse import ArgumentParser
 
-python_file_format =  """
+python_file_format =  Template("""
+Project Euler Problem $problem
+$description
+
 import sys
 import traceback
 
@@ -21,9 +25,9 @@ if __name__ == '__main__':
     except (ValueError, IOError) as error:
         print '%s: %s' % (type(error).__name__, error)
     except Exception as error:
-        print 'Uncaught Error: %s:\\n%s' % (type(error).__name__, traceback.format_exc())
+        print 'Uncaught Error: %\\n%s' % (type(error).__name__, traceback.format_exc())
 
-"""
+""")
 
 def parse_args(args):
     # Checks if the directory is valid
@@ -159,8 +163,7 @@ def main(args):
             if lang == 'python':
                 with open(os.path.join(path, 'problem_%s.py' % problem), 'w') as template:
                     comments = '\n'.join(['# %s' % line for line in description.split('\n')])
-                    template.write('# Project Euler Problem %s\n%s\n' % (problem, comments))
-                    template.write(python_file_format)
+                  template.write(python_file_format.substitute(problem=problem, description=comments))
             # write data files
             for file in files:
                 filename = file.split('/')[-1].split('#')[0].split('?')[0]
