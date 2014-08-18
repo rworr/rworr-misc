@@ -1,7 +1,21 @@
+Fastest Solutions:
  Problem Number |  Language  | Time (ms) 
 ----------------+------------+-----------
-              1 |     python |    1.4682
-              2 |     python |     1.445
-              3 |     python |    5.5432
-              4 |     python |    2.4351
-              5 |     python |     1.521
+              1 |     python |    1.7554
+              2 |     python |    1.4686
+              3 |     python |    5.3999
+              4 |     python |    2.3792
+              5 |     python |    1.4887
+
+cpp
+ Problem Number | Time (ms) 
+----------------+-----------
+
+python
+ Problem Number | Time (ms) 
+----------------+-----------
+              1 |    1.7554
+              2 |    1.4686
+              3 |    5.3999
+              4 |    2.3792
+              5 |    1.4887

@@ -191,15 +191,26 @@ def main(args):
         with open(path, 'w') as doc_file:
             doc_file.write(description)
 
-        # create db if it doesn't exist
-        db_path = os.path.join(args.root_directory, 'solutions.db')
-        if not os.path.exists(db_path):
-            global db
-            db = sqlite3.connect(db_path)
-            # create solutions table
-            execute('CREATE TABLE solutions (id integer primary key, language text, solution text, speed text)',
+    # create db if it doesn't exist
+    global db
+    db_path = os.path.join(args.root_directory, 'solutions.db')
+    if not os.path.exists(db_path):
+        # create solutions table
+        db = sqlite3.connect(db_path)
+        execute('CREATE TABLE solutions (id integer primary key, language text, solution text, speed text)',
+                'Error creating table: %s') 
+    else: 
+        db = sqlite3.connect(db_path)
+    for lang in args.languages:
+        cursor = db.cursor()
+        cursor.execute("select name from sqlite_master where type='table' and name='%s'" % lang)
+        row = cursor.fetchone()
+        if not row:
+            # create table
+            if lang=='c++': lang='cpp'
+            execute('create table %s (id integer primary key, speed text)' % lang, 
                     'Error creating table: %s')
-            db.close()
+    db.close()
 
 if __name__ == '__main__':
     try:
