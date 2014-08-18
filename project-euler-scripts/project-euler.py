@@ -58,6 +58,12 @@ def run_solution(command, problem, language):
     if row:
         # check answer
         if output == row[2]:
+            # insert into language table
+            cursor.execute('select * from %s where id = %s' % (lang, problem))
+            lang_row = cursor.fetchone()
+            if not lang_row:
+                execute("insert into %s values ('%s', '%s')" % (lang, problem, time),
+                        ('Error inserting %s into db: ' % problem) + '%s')               
             # check time
             fastest = float(row[3])
             if time < fastest:
@@ -65,6 +71,7 @@ def run_solution(command, problem, language):
                 print 'New fastest time!'
                 execute("update solutions set language = '%s', speed = '%s' where id = %s" % (language, time, problem),
                         ('Error updating problem %s: ' % problem) + '%s')
+                
                 execute("update %s set speed = '%s' where id = %s" % (lang, time, problem),
                         ('Error updating problem %s: ' % problem) + '%s')
         else:
