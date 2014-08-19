@@ -33,3 +33,18 @@ def gen_primes_sieve(max):
             if i in primes:
                 primes.remove(i)
     return primes
+
+def gen_primes(max = 0, num = 0):
+    """Generates a list of either num primes or primes with values op to max"""
+    primes = [2]
+    if max:
+        for i in range(3, max, 2):
+            if is_prime(i, primes):
+                primes.append(i)
+    elif num:
+        prime = 3
+        while(len(primes) < num):
+            if is_prime(prime, primes):
+                primes.append(prime)
+            prime += 2
+    return primes
