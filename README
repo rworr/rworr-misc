@@ -17,3 +17,5 @@ project-euler-scripts: a collection of scripts to make my life easier when worki
     - project-euler-run.py: a script which writes a file containing the problems from 
                        the database and the execution times of the solutions
 
+project-euler-scripts/pe_py_utils: a collection of utility scripts for use with project euler
+    - primes.py: contains functions for generating primes and checking if numbers are prime
