@@ -101,7 +101,7 @@ def main(args):
                 file = os.path.join(os.getcwd(), language, str(problem), 'problem_%s.cpp' % problem)
                 if os.path.exists(file) and os.path.isfile(file):
                     exe = os.path.join(os.getcwd(), language, str(problem), 'problem_%s' % problem)
-                    output = subprocess.check_output(['g++', file, '-o', exe, '-O3'])
+                    output = subprocess.check_output(['g++', file, '-o', exe, '-O3', '-I', os.path.join(os.getcwd(), 'pe_cpp_utils')])
                     if output.strip():
                         raise Exception('Error: %s failed to compile: %s' % (exe, output.strip()))
                     run_solution([exe], problem, language)
