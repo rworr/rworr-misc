@@ -105,6 +105,8 @@ def main(args):
                     if output.strip():
                         raise Exception('Error: %s failed to compile: %s' % (exe, output.strip()))
                     run_solution([exe], problem, language)
+                    # cleanup: delete executable
+                    os.remove(exe)
     db.close()
 
 if __name__ == '__main__':
