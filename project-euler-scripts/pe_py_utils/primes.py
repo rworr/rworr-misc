@@ -26,13 +26,11 @@ def gen_primes_sieve(max):
     """Generates a list of primes up to max using the sieve of Eratosthenes"""
     # Optimized implementation: squares
     sqrt = int(math.sqrt(max))
-    nums = range(2, sqrt)
-    primes = range(2, max)
-    for num in nums:
+    primes = [True for i in range(2, max)]
+    for num in range(2, sqrt):
         for i in range(num*num, max, num):
-            if i in primes:
-                primes.remove(i)
-    return primes
+            primes[i-2] = False
+    return [i for i in range(2, max) if primes[i-2]]
 
 def gen_primes(max = 0, num = 0):
     """Generates a list of either num primes or primes with values op to max"""
