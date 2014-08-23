@@ -64,15 +64,20 @@ def run_solution(command, problem, language):
             if not lang_row:
                 execute("insert into %s values ('%s', '%s')" % (lang, problem, time),
                         ('Error inserting %s into db: ' % problem) + '%s')               
-            # check time
+            else:
+                # update language time
+                problem, lang_time = lang_row
+                lang_time = float(lang_time)
+                if time < lang_time:
+                    print 'New fastest time for %s!' % lang
+                    execute("update %s set speed = '%s' where id = %s" % (lang, time, problem),
+                            ('Error updating problem %s: ' % problem) + '%s')
+            # update fastest time
             fastest = float(row[3])
             if time < fastest:
                 # update db, new fastest time
                 print 'New fastest time!'
                 execute("update solutions set language = '%s', speed = '%s' where id = %s" % (language, time, problem),
-                        ('Error updating problem %s: ' % problem) + '%s')
-                
-                execute("update %s set speed = '%s' where id = %s" % (lang, time, problem),
                         ('Error updating problem %s: ' % problem) + '%s')
         else:
             print 'Incorrect answer %s for problem %s: correct answer is %s' % (output, problem, row[2])
