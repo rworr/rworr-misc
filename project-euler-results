@@ -13,6 +13,14 @@ Fastest Solutions:
              10 |        c++ |    1.0428
              11 |     python |    1.6766
              12 |     python |  364.4138
+             13 |     python |    2.0782
+             14 |     python |  154.0175
+             15 |     python |    1.5293
+             16 |     python |    1.8511
+             17 |     python |    1.5866
+             18 |     python |    3.6757
+             19 |     python |    2.0003
+             20 |     python |    1.4584
 
 python
  Problem Number | Time (ms) 
@@ -29,6 +37,14 @@ python
              10 |  169.4098
              11 |    1.6766
              12 |  364.4138
+             13 |    2.0782
+             14 |  154.0175
+             15 |    1.5293
+             16 |    1.8511
+             17 |    1.5866
+             18 |    3.6757
+             19 |    2.0003
+             20 |    1.4584
 
 cpp
  Problem Number | Time (ms) 
