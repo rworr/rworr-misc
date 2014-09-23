@@ -21,6 +21,8 @@ Fastest Solutions:
              18 |     python |    3.6757
              19 |     python |    2.0003
              20 |     python |    1.4584
+             21 |     python |   12.1622
+             22 |     python |    2.5235
 
 python
  Problem Number | Time (ms) 
@@ -45,6 +47,8 @@ python
              18 |    3.6757
              19 |    2.0003
              20 |    1.4584
+             21 |   12.1622
+             22 |    2.5235
 
 cpp
  Problem Number | Time (ms) 
